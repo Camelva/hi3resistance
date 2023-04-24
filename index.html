@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style> #data div { margin: 10px 0; } </style>
+</head>
+<body>
+    <h2>Get your resistance values:</h2>
+    <form id="data">
+        <div>
+            <label for="dist">Enter disturbance:</label>
+            <input type="number" name="dist" id="dist">
+        </div>
+
+        <div>
+            <label for="tier">Choose your abyss tier:</label>
+            <select name="tier" id="tier">
+                <option value="NV">Nirvana</option>
+                <option value="RL" selected>Red Lotus</option>
+                <option value="A3">Agony 3</option>
+                <option value="A2">Agony 2</option>
+                <option value="A1">Agony 1</option>
+                <option value="S3">Sinful 3</option>
+                <option value="S2">Sinful 2</option>
+                <option value="S1">Sinful 1</option>
+                <option value="FB">Forbidden</option>
+            </select>
+        </div>
+
+        <button type="submit">Calc it!</button>
+    </form>
+
+    <hr>
+
+    <div id="result">
+        <h3>Result</h3>
+        <p>Elemental resistance is: <span id="result-ele"></span></p>
+        
+        <p>Physical resistance is: <span id="result-phys"></span></p>
+
+        <p>Keep in mind, some bosses might have additional buffs to reduce damage even further!</p>
+    </div>
+
+    <script>
+        const eleRes = {
+            "NV": {"m": 0.060919, "b": 30.22086},
+            "RL": {"m": 0.109936, "b": 8.937896},
+            "A3": {"m": 0.101057, "b": 3.568432},
+            "A2": {"m": 0.081444, "b": 9.690711},
+            "A1": {"m": 0.066125, "b": 14.20807},
+            "S3": {"m": 0.028600, "b": 23.37935},
+            "S2": {"m": 0.037357, "b": 21.55595},
+            "S1": {"m": 0.030981, "b": 22.77705},
+            "FB": {"m": 0.034195, "b": 22.29482},
+        }
+
+        const physRes = {
+            "NV": {"m": 0.050390, "b": 46.25637},
+            "RL": {"m": 0.099630, "b": 24.88687},
+            "A3": {"m": 0.165772, "b": -9.60857},
+            "A2": {"m": 0.140951, "b": -1.85279},
+            "A1": {"m": 0.116114, "b": 5.414997},
+            "S3": {"m": 0.064314, "b": 17.84434},
+            "S2": {"m": 0.055164, "b": 19.39904},
+            "S1": {"m": 0.073466, "b": 15.91751},
+            "FB": {"m": 0.072533, "b": 16.13143},
+        }
+
+        let calc = (bracket, disturbance) => {
+            let p = physRes[bracket]
+            let e = eleRes[bracket]
+
+            let phys = disturbance * p.m + p.b
+            let ele = disturbance * e.m + e.b
+
+            return {phys, ele}
+        }
+
+        const form  = document.getElementById('data');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault()
+
+            let dist = form.elements['dist'].value
+            let tier = form.elements['tier'].value
+
+            let {phys, ele} = calc(tier, dist)
+
+            // 20 * (80 + 15) = 1900
+            let def = (1 / (100 - phys) * 100 - 1) * 1900
+
+            document.getElementById("result-ele").textContent = ele
+            document.getElementById("result-phys").textContent = phys + " (def = " + def + ")"
+        });
+    </script>
+</body>
+</html>
